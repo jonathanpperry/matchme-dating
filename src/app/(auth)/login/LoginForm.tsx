@@ -6,6 +6,9 @@ import { GiPadlock } from "react-icons/gi";
 import { useForm } from "react-hook-form";
 import { loginSchema, LoginSchema } from "@/lib/schemas/LoginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signInUser } from "@/app/actions/authActions";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function LoginForm() {
   const {
@@ -14,9 +17,21 @@ export default function LoginForm() {
     formState: { isValid, errors },
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
+    mode: "onTouched",
   });
 
-  const onSubmit = (data: LoginSchema) => console.log(data);
+  const router = useRouter();
+
+  const onSubmit = async (data: LoginSchema) => {
+    const result = await signInUser(data);
+    console.log("result::: ", result);
+    if (result.status === "success") {
+      router.push("/members");
+      router.refresh();
+    } else {
+      toast.error(result.error as string);
+    }
+  };
 
   return (
     <Card className="w-3/5 mx-auto">
