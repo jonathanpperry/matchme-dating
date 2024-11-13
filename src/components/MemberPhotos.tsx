@@ -1,4 +1,5 @@
 "use client";
+
 import { deleteImage, setMainImage } from "@/app/actions/userActions";
 import { Photo } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -28,8 +29,11 @@ export default function MemberPhotos({ photos, editing, mainImageUrl }: Props) {
       id: photo.id,
       type: "main",
     });
+
     await setMainImage(photo);
+
     router.refresh();
+
     setLoading({
       isLoading: false,
       id: "",
