@@ -1,14 +1,21 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import usePresenceStore from "./usePresenceStore";
 import { Channel, Members } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
+import { shallow } from "zustand/shallow"; // Import shallow if available in your zustand version
 
 export const usePresenceChannel = () => {
-  const { set, add, remove } = usePresenceStore((state) => ({
-    set: state.set,
-    add: state.add,
-    remove: state.remove,
-  }));
+  // Get individual selectors
+  const set = usePresenceStore((state) => state.set);
+  const add = usePresenceStore((state) => state.add);
+  const remove = usePresenceStore((state) => state.remove);
+
+  // Memoize the object to prevent re-renders
+  const storeActions = useMemo(() => ({
+    set,
+    add,
+    remove
+  }), [set, add, remove]);
 
   const channelRef = useRef<Channel | null>(null);
 
