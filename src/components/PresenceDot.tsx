@@ -1,6 +1,6 @@
 import usePresenceStore from "@/hooks/usePresenceStore";
 import { Member } from "@prisma/client";
-import React from "react";
+import React, { useMemo } from "react";
 import { GoDot, GoDotFill } from "react-icons/go";
 
 type Props = {
@@ -8,12 +8,15 @@ type Props = {
 };
 
 export default function PresenceDot({ member }: Props) {
-  const { membersId } = usePresenceStore((state) => ({
-    membersId: state.membersId,
-  }));
+  // Only select the exact data you need - no destructuring
+  const membersId = usePresenceStore((state) => state.membersId);
 
-  const isOnline = membersId.indexOf(member.userId) !== -1;
+  // Use useMemo to prevent recalculations on every render
+  const isOnline = useMemo(() => {
+    return membersId.includes(member.userId);
+  }, [membersId, member.userId]);
 
+  // Return null early if not online
   if (!isOnline) return null;
 
   return (

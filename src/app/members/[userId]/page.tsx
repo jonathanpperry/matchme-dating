@@ -8,7 +8,9 @@ export default async function MemberDetailsPage({
 }: {
   params: { userId: string };
 }) {
-  const member = await getMemberByUserId(params.userId);
+  // Explicitly await the params object before accessing properties
+  const resolvedParams = await Promise.resolve(params);
+  const member = await getMemberByUserId(resolvedParams.userId);
 
   if (!member) return notFound();
 
